@@ -4,12 +4,26 @@ models:
   - name: stg_customers
     columns:
       - name: customer_id
+        description: Primary key for customers.
         tests:
           - unique
           - not_null
+      - name: first_name
+        description: First name of customer.
+      - name: last_name
+        description: Last name of customer.
+
   - name: stg_orders
     columns:
+      - name: order_id
+        description: Primary key for orders.
+        tests:
+          - unique
+          - not_null
+      - name: order_date
+        description: Order date for order_id.
       - name: status
+        description: "{{ doc('order_status') }}"
         tests:
           - accepted_values:
               values: 
@@ -18,11 +32,47 @@ models:
                 - returned
                 - placed
                 - return_pending    
-      - name: customer_id 
+      - name: customer_id
+        description: Customer ID and join key to customers table.
         tests:
           - relationships:
               to: ref('customers')
               field: customer_id
+    
+  - name: stg_payments
+    columns:
+      - name: payment_id
+        description: Primary key for payments.
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        decription: Order ID and join key to orders table.
+        tests:
+          - relationships:
+              to: ref('orders')
+              field: order_id
+      - name: payment_method
+        description: "{{ doc('payment_method') }}"
+        tests:
+          - accepted_values:
+              values:
+                - credit_card
+                - bank_transfer
+                - coupon
+                - gift_card
+      - name: status
+        description: "{{ doc('payment_status') }}"
+        tests:
+          - accepted_values:
+              values:
+                - success
+                - fail
+      - name: amount
+        description: Payment amount in dollars.
+      - name: created_at
+        description: Date of payment.
+
 
 
               
